@@ -110,3 +110,14 @@ export function getPostsData({ jsonFileName, id }: GetPostsDataProps): GetPostsD
     return { isError: true };
   }
 }
+
+/** ✨ createDataFile: 접근하고자하는 json파일이 없다면 생성하는 로직 */
+export function createDataFile(fileName: string): boolean {
+  try {
+    if (!fs.existsSync(fileName)) fs.writeFileSync(fileName, `[]`);
+    return true;
+  } catch (e) {
+    console.error(e);
+    return false;
+  }
+}

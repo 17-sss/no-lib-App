@@ -1,6 +1,6 @@
 import path from "path";
 import { Router, Request, Response } from "express";
-import { createMessage, getPostsData, setPostData } from "./utils";
+import { createDataFile, createMessage, getPostsData, setPostData } from "./utils";
 import { httpStatus } from "./utils";
 import { PostData, ResponseDataType } from "@common/types";
 import { ServerError } from "./core";
@@ -51,6 +51,7 @@ router.post("/write", async (req: Request, res: Response) => {
     const routeName = "api: write";
     if (!req.body) throw new ServerError(createMessage({ type: "NO_DATA_SENT", name: routeName }), BAD_REQUEST);
 
+    createDataFile(jsonFileName);
     const { result: postData } = getPostsData({ jsonFileName });
     let id = -1;
     if (Array.isArray(postData)) {
@@ -85,6 +86,7 @@ router.put("/edit", async (req: Request, res: Response) => {
     const name = "api: edit";
     if (!req.body) throw new ServerError(createMessage({ type: "NO_DATA_SENT", name }), BAD_REQUEST);
 
+    createDataFile(jsonFileName);
     const { result: allData } = getPostsData({ jsonFileName });
     if (!allData || !Array.isArray(allData))
       throw new ServerError(createMessage({ type: "UNABLE_EDIT", name }), INTERNAL_SERVER_ERROR);
@@ -98,7 +100,7 @@ router.put("/edit", async (req: Request, res: Response) => {
     cacheMap.clear();
 
     const result: ResponseDataType<number> = {
-      data: findIdx,
+      data: allData[findIdx].id,
       message: createMessage({ type: "SUCCESS", name }),
       statusCode: OK,
     };
@@ -117,6 +119,7 @@ router.delete("/delete", async (req: Request, res: Response) => {
     const name = "api: delete";
     if (!req.body) throw new ServerError(createMessage({ type: "NO_DATA_SENT", name }), BAD_REQUEST);
 
+    createDataFile(jsonFileName);
     const { result: allData } = getPostsData({ jsonFileName });
     if (!allData || !Array.isArray(allData))
       throw new ServerError(createMessage({ type: "UNABLE_DELETE", name }), INTERNAL_SERVER_ERROR);
