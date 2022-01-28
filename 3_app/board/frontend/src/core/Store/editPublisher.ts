@@ -21,12 +21,12 @@ export const initEditState: Readonly<EditPublisherState> = {
 export const LOCAL_EDIT_KEY = "board_edit";
 
 function isResetEditLocalState(): boolean {
-  const { origin, pathname } = new URL(window.location.href);
+  const { pathname } = new URL(window.location.href);
   const mainLocalState = getParseLocalItem<MainPublisherState>(LOCAL_EDIT_KEY);
   const editId = mainLocalState?.editId;
   const isNeedReset = !editId || editId === initMainState.editId || pathname !== "/edit";
   if (isNeedReset) {
-    window.history.pushState({ origin }, "", origin);
+    // window.history.pushState({ origin }, "", origin);
     removeLocalItem(LOCAL_EDIT_KEY);
   }
   return isNeedReset;

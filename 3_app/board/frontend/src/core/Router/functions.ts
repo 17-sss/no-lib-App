@@ -1,4 +1,4 @@
-import { DetailPage, EditPage, MainPage } from "@src/pages";
+import { DetailPage, EditPage, MainPage, NotFoundPage } from "@src/pages";
 import { TargetType } from "../Component";
 import { RenderPathProps, RouterInfo } from ".";
 import CustomError from "../CustomError";
@@ -8,9 +8,8 @@ export function renderPath({ href, routerInfo, componentName, publisherList }: R
   try {
     if (!routerInfo) throw new CustomError("NOT_FOUND_ROUTER_INFO", componentName);
     const { pathname } = new URL(href);
-    const info = routerInfo[pathname];
+    const info = routerInfo[pathname] ?? routerInfo["notFound"];
 
-    if (!info) return; // NOTFOUND로 가게하기.
     const { Component: PageComponent, props } = info;
 
     let $target = info.$target;
@@ -28,6 +27,7 @@ export function renderPath({ href, routerInfo, componentName, publisherList }: R
 /** ✨ createRouterInfo: 이 애플리케이션에서 쓸 페이지 정보 생성 */
 export function createRouterInfo($target: TargetType = document.querySelector("#root")): RouterInfo {
   const routerInfo: RouterInfo = {
+    notFound: { $target, Component: NotFoundPage },
     "/": { $target, Component: MainPage },
     "/detail": { $target, Component: DetailPage },
     "/edit": { $target, Component: EditPage },

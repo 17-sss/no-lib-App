@@ -18,7 +18,7 @@ export interface RenderPathProps {
   href: string;
   componentName?: string;
   routerInfo: RouterInfo;
-  publisherList: Publisher[];
+  publisherList?: Publisher[];
 }
 
 // ========

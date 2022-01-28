@@ -1,0 +1,7 @@
+@import "../../utils/style/mixin.scss";
+
+.not-found__page {
+  @include setFlex(column, center, center);
+  row-gap: 24px;
+  padding-top: 0 !important;
+}

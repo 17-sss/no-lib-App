@@ -1,0 +1,9 @@
+@for $i from 10 to 50 {
+  .app-span.fontSize--#{$i} {
+    font-size: calc($i * 0.1rem);
+  }
+}
+
+.app-span.bold {
+  font-weight: 700;
+}

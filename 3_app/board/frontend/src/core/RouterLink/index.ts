@@ -5,9 +5,9 @@ import "./style.scss";
 
 type DefaultLinkProps = Pick<HTMLAnchorElement, "href" | "text"> & Partial<Pick<HTMLAnchorElement, "name">>;
 export interface RouterLinkProps<T = unknown> extends Props, DefaultLinkProps {
-  publisherList: Publisher[];
   routerInfo: RouterInfo;
   isButton?: boolean;
+  publisherList?: Publisher[];
   callbackOption?: {
     func: () => Promise<T> | T;
     runPosition: "beforePushState" | "afterRenderPath";
