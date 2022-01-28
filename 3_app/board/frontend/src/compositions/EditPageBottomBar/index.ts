@@ -1,6 +1,6 @@
-import { PostData } from "@common/types";
+import { PostData, ResponseDataType } from "@common/types";
 import { Button } from "@src/components";
-import { Component, createRouterInfo, RouterLink } from "@src/core";
+import { Component, createRouterInfo, RouterLink, RouterLinkProps } from "@src/core";
 import { editPublisher, mainPublisher, initEditState } from "@src/core/Store";
 import { execFetch } from "@src/utils/functions";
 import { requiredPostDataKeys } from "@src/utils/types";
@@ -16,15 +16,19 @@ class EditPageBottomBar extends Component {
   protected setChildren(): void {
     const routerInfo = createRouterInfo();
     const commonLinkProps = { isButton: true, routerInfo, publisherList: [mainPublisher, editPublisher] };
-
     new Button(".edit__page--bottombar", { name: "goback", text: "뒤로" });
-    new RouterLink(".edit__page--bottombar", {
+    const routerLinkProps: RouterLinkProps<number> = {
       ...commonLinkProps,
-      href: `/`,
+      href: `/detail`,
       name: "submitlink",
       text: "전송",
-      callbackOption: { func: () => this.regsiterEditData(), runPosition: "beforePushState" },
-    });
+      callbackOption: {
+        func: async (): Promise<number> => await this.regsiterEditData(),
+        runPosition: "beforePushState",
+        options: { isID: true },
+      },
+    };
+    new RouterLink(".edit__page--bottombar", routerLinkProps);
   }
 
   protected setEvents(): void {
@@ -50,31 +54,31 @@ class EditPageBottomBar extends Component {
 
   // [2-1] Events (callback)
   /** RouterLink(submitlink)의 콜백, 현재 데이터를 전송 (작성 / 수정)  */
-  private regsiterEditData(): boolean {
+  private async regsiterEditData(): Promise<number> {
     const { editData } = editPublisher.state;
     const notEmptyCnt = Object.keys(editData).reduce((result, key) => {
       if (editData[key as keyof PostData]) result++;
       return result;
     }, 0);
     const isOK = notEmptyCnt >= requiredPostDataKeys.length;
-    if (!isOK) return false;
+    if (!isOK) return -1;
     const isEdit = notEmptyCnt > requiredPostDataKeys.length;
-
-    this.requestCreateData(editData, isEdit);
-    editPublisher.setState({ ...editPublisher.state, editData: initEditState.editData });
-    return isOK;
+    const currId = await this.requestCreateData(editData, isEdit);
+    return currId;
   }
 
   // 서버로 전송 (작성 or 수정)
-  private async requestCreateData(editData: PostData, isEdit?: boolean): Promise<void> {
+  private async requestCreateData(editData: PostData, isEdit?: boolean): Promise<number> {
     try {
       const type = isEdit ? "edit" : "write";
       const method = isEdit ? "PUT" : "POST";
       const options = { method, body: JSON.stringify(editData), headers: { "Content-Type": "application/json" } };
-      await execFetch({ type, options });
-      editPublisher.setState({ ...editPublisher.state, isEdited: true });
+      const result: ResponseDataType<number> | null = await execFetch({ type, options });
+      editPublisher.setState({ ...editPublisher.state, editData: initEditState.editData, isEdited: true });
+      return result?.data ? result.data : -1;
     } catch (e) {
       console.error(e);
+      return -1;
     }
   }
   // ------

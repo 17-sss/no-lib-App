@@ -1,6 +1,6 @@
 import { initMainState, MainPublisherState, Publisher } from ".";
 import { PostData } from "@common/types";
-import { execFetch, getParseLocalItem, removeLocalItem, setConvertLocalItem } from "@src/utils/functions";
+import { getParseLocalItem, removeLocalItem, setConvertLocalItem } from "@src/utils/functions";
 
 export interface EditPublisherState {
   editData: PostData;

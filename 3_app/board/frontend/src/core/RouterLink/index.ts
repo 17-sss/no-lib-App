@@ -4,13 +4,14 @@ import { Publisher } from "../Store";
 import "./style.scss";
 
 type DefaultLinkProps = Pick<HTMLAnchorElement, "href" | "text"> & Partial<Pick<HTMLAnchorElement, "name">>;
-export interface RouterLinkProps extends Props, DefaultLinkProps {
-  routerInfo: RouterInfo;
+export interface RouterLinkProps<T = unknown> extends Props, DefaultLinkProps {
   publisherList: Publisher[];
+  routerInfo: RouterInfo;
   isButton?: boolean;
   callbackOption?: {
-    func: () => boolean | void;
+    func: () => Promise<T> | T;
     runPosition: "beforePushState" | "afterRenderPath";
+    options?: { isID: boolean };
   };
 }
 
@@ -43,19 +44,26 @@ class RouterLink extends Component<{}, RouterLinkProps> {
     this.getEventTarget()?.addEventListener("click", (e) => this.anchorClickHandler(e));
   }
 
-  private anchorClickHandler(e?: MouseEvent | Event): void {
+  private async anchorClickHandler(e?: MouseEvent | Event): Promise<void> {
     e?.preventDefault();
     const $target = e?.target as HTMLElement;
     const $currentTarget = e?.currentTarget as HTMLAnchorElement;
     if (!$currentTarget || $target !== $currentTarget) return;
-    const href = $currentTarget.href;
+    let href = $currentTarget.href;
     if (!href) return;
 
     const { callbackOption: cb } = this.props;
     if (cb?.func && cb.runPosition === "beforePushState") {
-      const execFunc = cb.func();
+      const execFunc = await cb.func();
+
       const isBooleanFunc = typeof execFunc === "boolean";
       if (isBooleanFunc && !execFunc) return;
+
+      if (cb.options?.isID) {
+        const isNumberFunc = typeof execFunc === "number";
+        if (isNumberFunc && execFunc === -1) return;
+        href += `?id=${execFunc}`;
+      }
     }
 
     window.history.pushState({ href }, "", href);
