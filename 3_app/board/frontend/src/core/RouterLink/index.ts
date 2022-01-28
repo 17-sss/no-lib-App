@@ -1,5 +1,5 @@
 import Component, { Props, TargetType } from "../Component";
-import { renderPath, RouterInfo } from "../Router";
+import { renderRouterPath, RouterInfo } from "../Router";
 import { Publisher } from "../Store";
 import "./style.scss";
 
@@ -69,8 +69,8 @@ class RouterLink extends Component<{}, RouterLinkProps> {
     window.history.pushState({ href }, "", href);
 
     const { routerInfo, publisherList } = this.props;
-    const componentName = `${this.constructor.name}(${this.componentId})`;
-    renderPath({ href, componentName, routerInfo, publisherList });
+    const calledComponentName = `${this.constructor.name}(${this.componentId})`;
+    renderRouterPath({ href, calledComponentName, routerInfo, publisherList });
     if (cb?.func && cb.runPosition === "afterRenderPath") cb.func();
   }
 }

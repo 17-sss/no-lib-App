@@ -1,5 +1,5 @@
 import { DetailPageBottomBar, DetailPageContent } from "@src/compositions";
-import { Component, createQueryStrings } from "@src/core";
+import { Component, createQueryStrings, renderPath } from "@src/core";
 import "./style.scss";
 
 interface DetailPageState {
@@ -11,7 +11,7 @@ class DetailPage extends Component<DetailPageState> {
     const { search } = new URL(window.location.href);
     const dataId = createQueryStrings(search)?.find((v) => v.key === "id")?.value;
 
-    if (!dataId) window.location.href = "/";
+    if (!dataId) renderPath();
     else this.setState({ ...this.state, dataId }, { noRender: true });
   }
   protected setTemplate(): string {

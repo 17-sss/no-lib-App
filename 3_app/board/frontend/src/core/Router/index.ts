@@ -6,20 +6,14 @@
  */
 import CustomError from "../CustomError";
 import { ComponentItemType } from "../Component";
-import { renderPath } from "./functions";
+import { renderRouterPath } from "./functions";
 import { Publisher } from "../Store";
+
 export * from "./functions";
 
 export type RouterInfo = {
   [key: string]: ComponentItemType;
 };
-
-export interface RenderPathProps {
-  href: string;
-  componentName?: string;
-  routerInfo: RouterInfo;
-  publisherList?: Publisher[];
-}
 
 // ========
 
@@ -27,7 +21,7 @@ class Router {
   constructor(
     protected readonly $target: Element | null,
     protected readonly routerInfo: RouterInfo,
-    private readonly publisherList: Publisher[],
+    private readonly publisherList: Publisher[]
   ) {
     try {
       if ($target === null) throw new CustomError("NOT_FOUND_TARGET", this.constructor.name);
@@ -45,7 +39,8 @@ class Router {
     this.setPopStateEvent();
     const href = window.location.href;
     const { routerInfo, publisherList } = this;
-    renderPath({ href, componentName: this.constructor.name, routerInfo, publisherList });
+    const calledComponentName = this.constructor.name;
+    renderRouterPath({ href, calledComponentName, routerInfo, publisherList });
   }
 
   private setPopStateEvent(): void {
@@ -54,7 +49,8 @@ class Router {
   private popStateEventHandler(e?: PopStateEvent): void {
     const href = window.location.href;
     const { routerInfo, publisherList } = this;
-    renderPath({ href, componentName: this.constructor.name, routerInfo, publisherList });
+    const calledComponentName = this.constructor.name;
+    renderRouterPath({ href, calledComponentName, routerInfo, publisherList });
   }
 }
 

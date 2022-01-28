@@ -1,18 +1,60 @@
 import { DetailPage, EditPage, MainPage, NotFoundPage } from "@src/pages";
-import { TargetType } from "../Component";
-import { RenderPathProps, RouterInfo } from ".";
+import { TargetType, ComponentItemType } from "../Component";
+import { Publisher } from "../Store";
 import CustomError from "../CustomError";
+import { RouterInfo } from ".";
 
-/** ✨ renderPath: 현재 path를 기반으로 routerInfo에서 페이지 컴포넌트 정보를 불러와서 렌더링 */
-export function renderPath({ href, routerInfo, componentName, publisherList }: RenderPathProps): void {
+interface PathProps {
+  publisherList?: Publisher[];
+}
+
+interface RenderPathProps extends PathProps {
+  href?: string;
+  componentInfo?: ComponentItemType;
+}
+
+/** ✨ renderPath: 주어진 href와 componentInfo의 정보를 활용하여 렌더링
+ *  - 아무런 값이 없다면 기본 값은 notFound 페이지로 이동하며 렌더링
+ */
+export function renderPath({ href, publisherList, componentInfo }: RenderPathProps = {}): void {
+  if (!href) href = new URL(window.location.href).origin + "/notFound";
+  window.history.pushState({ href }, "", href);
+
+  const info: ComponentItemType<{}> = componentInfo ?? {
+    $target: document.querySelector("#root"),
+    Component: NotFoundPage,
+  };
+
+  let { $target, Component: PageComponent, props } = info;
+  if (typeof $target === "string") $target = document.querySelector($target);
+  if (!$target) return;
+  $target.innerHTML = "";
+
+  if (publisherList) publisherList.forEach((pub) => pub.clear());
+  new PageComponent($target, props);
+}
+
+interface RenderRouterPathProps extends PathProps {
+  href: string;
+  routerInfo: RouterInfo;
+  calledComponentName?: string;
+}
+
+/** ✨ renderRouterPath: 현재 path를 기반으로 routerInfo에서 페이지 컴포넌트 정보를 불러와서 렌더링 */
+export function renderRouterPath({
+  href,
+  routerInfo,
+  calledComponentName,
+  publisherList,
+}: RenderRouterPathProps): void {
   try {
-    if (!routerInfo) throw new CustomError("NOT_FOUND_ROUTER_INFO", componentName);
+    if (!routerInfo) throw new CustomError("NOT_FOUND_ROUTER_INFO", calledComponentName);
     const { pathname } = new URL(href);
-    const info = routerInfo[pathname] ?? routerInfo["notFound"];
+    const info = routerInfo[pathname] ?? routerInfo["/notFound"];
 
     const { Component: PageComponent, props } = info;
-
     let $target = info.$target;
+
     if (typeof $target === "string") $target = document.querySelector($target);
     if (!$target) return;
     $target.innerHTML = "";
@@ -27,11 +69,11 @@ export function renderPath({ href, routerInfo, componentName, publisherList }: R
 /** ✨ createRouterInfo: 이 애플리케이션에서 쓸 페이지 정보 생성 */
 export function createRouterInfo($target: TargetType = document.querySelector("#root")): RouterInfo {
   const routerInfo: RouterInfo = {
-    notFound: { $target, Component: NotFoundPage },
     "/": { $target, Component: MainPage },
     "/detail": { $target, Component: DetailPage },
     "/edit": { $target, Component: EditPage },
     "/write": { $target, Component: EditPage },
+    "/notFound": { $target, Component: NotFoundPage },
   };
   return routerInfo;
 }
