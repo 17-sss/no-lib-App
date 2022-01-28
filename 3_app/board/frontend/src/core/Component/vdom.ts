@@ -31,7 +31,7 @@ export function updateNodes(
   const MAX_LENGTH = Math.max(prevNodes.length, newNodes.length);
   let idx = 0;
 
-  if (isNeedFixNodes && prevNodes.length > newNodes.length) fixedNewNodes(prevNodes, newNodes);
+  if (isNeedFixNodes) newNodes = fixedNewNodes(prevNodes, newNodes);
 
   while (MAX_LENGTH > idx) {
     const prevNode = prevNodes[idx];
@@ -102,29 +102,26 @@ function execAttributesCheck(prevNode: Node | Element, newNode: Node | Element) 
 
 /**
  * 👾 fixedNewNodes
- * - Compoennt에서 isKeepAdding에 의해 _renderState 변경 시
- *    newNodes만 비교하여 업데이트하면 안됨.
+ * - Compoennt에서 isKeepAdding에 의해 _renderState 변경 시 newNodes만 비교하여 업데이트하면 안됨.
  *    - prevNodes에는 다른 컴포넌트들에 의해 추가된 Element들이 있음.
- * - newNodes안에 prevNodes의 노드들을 추가하는 함수
- *   (newNodes에 이미 있는 Node는 변경하지 않음)
+ * - 주어진 prevNodes, newNodes를 활용하여 새로운 node들을 만들어내는 함수
+ *   - prevNodes를 복제 후, newNodes의 요소를 추가하여 새로운 node들을 반환.
  */
-function fixedNewNodes(prevNodes: Node[], newNodes: Node[]): void {
-  prevNodes.forEach((prevNode, i) => {
-    const findSameIdNode = newNodes.find((newNode) => {
-      const isElement = newNode instanceof Element && prevNode instanceof Element;
-      if (!isElement) return;
+function fixedNewNodes(prevNodes: Node[], newNodes: Node[]): Node[] {
+  const result = [...prevNodes];
+  newNodes.forEach((newNode) => {
+    const idx = prevNodes.findIndex((prevNode) => {
+      const isSameNodeName = newNode.nodeName === prevNode.nodeName;
+      const isAllElement = prevNode instanceof HTMLElement && newNode instanceof HTMLElement;
+      if (!isAllElement) return;
+      const prevId = prevNode.dataset.componentId;
+      const newId = newNode.dataset.componentId;
+      const isSameId = prevId === newId;
 
-      let [prevId, newId] : (string | undefined)[] = Array.from({length: 2});
-      if (prevNode instanceof HTMLElement) prevId = prevNode.dataset.componentId;
-      if (newNode instanceof HTMLElement) newId = newNode.dataset.componentId;
-      if ((prevId && newId) && prevId === newId) return true;
-
-      [prevId, newId] = [prevNode.id, newNode.id];
-      if ((prevId && newId) && prevId === newId) return true;
+      return isSameNodeName && isAllElement && isSameId;
     });
-    if (findSameIdNode) return;
-    const tmpNode = newNodes[i];
-    if (tmpNode) newNodes[i + 1] = tmpNode;
-    newNodes[i] = prevNode;
+    if (idx === -1) return;
+    result[idx] = newNode;
   });
+  return result;
 }
