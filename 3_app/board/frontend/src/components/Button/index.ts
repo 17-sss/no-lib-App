@@ -4,6 +4,8 @@ import "./style.scss";
 type DefaultButtonProps = Pick<HTMLButtonElement, "name"> & Partial<Pick<HTMLButtonElement, "type">>;
 interface ButtonProps extends Props, DefaultButtonProps {
   text: string;
+  color?: "normal" | "blue" | "red";
+  size?: "small" | "medium" | "large";
 }
 
 class Button extends Component<{}, ButtonProps> {
@@ -12,9 +14,14 @@ class Button extends Component<{}, ButtonProps> {
   }
   protected setTemplate(): string {
     const { componentId, props } = this;
-    return `<button class="app-button" ${this.createStringAttribute("text")} data-component-id=${componentId}>${
-      props.text
-    }</button>`;
+    const { color, size } = props;
+    const strColor = color ? `color--${color}` : `color--normal`;
+    const strSize = size ? `size--${size}` : `size--small`;
+    const strClassName = `${strColor} ${strSize}`;
+
+    return `<button class="app-button ${strClassName}"
+      ${this.createStringAttribute("text", "color", "size")} data-component-id=${componentId}>
+      ${props.text}</button>`;
   }
 }
 

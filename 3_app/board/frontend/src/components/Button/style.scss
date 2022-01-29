@@ -3,12 +3,52 @@
 
 .app-button {
   cursor: pointer;
-  font-size: var(--page-font-size-small);
-  background-color: var(--color-white);
-  border: 1px solid var(--color-gray-200);
-  padding: 8px 12px;
+}
 
-  &:hover {
-    background-color: var(--color-gray-100);
+.app-button.color {
+  &--normal {
+    border: 1px solid var(--color-gray-200);
+    background-color: var(--color-white);
+    &:hover {
+      background-color: var(--color-gray-100);
+    }
+  }
+
+  &--blue,
+  &--red {
+    color: var(--color-white);
+  }
+
+  &--blue {
+    border: 1px solid var(--color-light-blue-500);
+    background-color: var(--color-light-blue-600);
+    &:hover {
+      background-color: var(--color-light-blue-400);
+    }
+  }
+
+  &--red {
+    border: 1px solid var(--color-red-500);
+    background-color: var(--color-red-600);
+    &:hover {
+      background-color: var(--color-red-400);
+    }
+  }
+}
+
+.app-button.size {
+  &--small {
+    padding: 8px 12px;
+    font-size: var(--page-font-size-small);
+  }
+
+  &--medium {
+    padding: 8px 16px;
+    font-size: var(--page-font-size);
+  }
+
+  &--large {
+    padding: 12px 20px;
+    font-size: var(--page-font-size-large);
   }
 }
