@@ -84,7 +84,7 @@ class DetailPageContent extends Component<DetailPageContentState, DetailPageCont
 
       const { message, statusCode, data: currData } = res;
       const isResOK = statusCode >= 200 && statusCode < 400;
-      if (!isResOK) throw new Error(message);
+      if (!isResOK) throw new CustomError({ name: "DetailPage, GET CONTENT", customMessage: message });
 
       if (currData.createdDate) currData.createdDate = new Date(currData.createdDate);
 

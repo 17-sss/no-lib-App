@@ -94,7 +94,7 @@ class DetailPageBottomBar extends Component<DetailPageBottomBarState, DetailPage
 
       const { message, statusCode } = res;
       const isResOK = statusCode >= 200 && statusCode < 400;
-      if (!isResOK) throw new Error(message);
+      if (!isResOK) throw new CustomError({ customMessage: message, name: "DetailPage, DELETE" });
 
       editPublisher.setState({ ...editPublisher.state, isEdited: true });
 

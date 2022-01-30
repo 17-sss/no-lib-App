@@ -37,8 +37,8 @@ interface CreateMessageProps {
 }
 /** ✨ createMessage: 각종 메시지 생성  */
 export const createMessage = ({ type, name }: CreateMessageProps) => {
-  const strName = name ? `[${name}]` : "";
-  return `${strName} ${messages[type]}`;
+  const strName = name ? `[${name}] ` : "";
+  return `${strName}${messages[type]}`;
 };
 
 // [+] JSON =============================================================================

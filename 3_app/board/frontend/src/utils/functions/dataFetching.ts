@@ -45,10 +45,10 @@ interface GetAllPostReturnType {
 }
 
 /** ✨ getAllPostData: 서버에서 모든 게시물 데이터를 가져와서 정렬 및 추가 작업 후 반환 */
-export async function getAllPostData(): Promise<GetAllPostReturnType> {
+export async function getAllPostData(customMessage?: string): Promise<GetAllPostReturnType> {
   try {
     const res = await execFetch<ResponseDataType<PostData[]>>();
-    if (!res || !res.data) throw new CustomError({ name: `Board, GET ALL DATA`, msgType: "RESPONSE_IS_NULL" });
+    if (!res || !res.data) throw new CustomError({ msgType: "RESPONSE_IS_NULL", customMessage });
 
     const { data: arrPosts } = res;
     arrPosts.forEach((post, i) => {

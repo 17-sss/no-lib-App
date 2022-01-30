@@ -77,19 +77,17 @@ class MainPageBoard extends Component<MainPageBoardState> {
    */
   private async initGetAllPostData() {
     try {
-      const res = await getAllPostData();
-      if (!res) return;
-      const { isEdited } = editPublisher.state;
-      const { data: latestPostdata, message } = res;
+      const customMessage = `서버에 데이터가 없거나 오류가 있습니다. 게시글 작성을 시도해주세요.`;
+      const res = await getAllPostData(customMessage);
 
-      if (!latestPostdata || (!latestPostdata && message)) {
-        const customMessage = `서버에 데이터가 없거나 오류가 있습니다. 게시글 작성을 시도해주세요.`;
+      if (!res || !res.data || (!res.data && res.message)) {
         throw new CustomError({ name: `MainPage, GET ALL POST`, customMessage });
       }
-      initMainState.postData = latestPostdata;
+      initMainState.postData = res.data;
 
+      const { isEdited } = editPublisher.state;
       mainPublisher.setState(
-        { ...mainPublisher.state, postData: [...latestPostdata] },
+        { ...mainPublisher.state, postData: [...res.data] },
         { notExec: isEdited ? true : undefined }
       );
       if (isEdited) editPublisher.setState({ ...editPublisher.state, isEdited: false }, { notExec: true });

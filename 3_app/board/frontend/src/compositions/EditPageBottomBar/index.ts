@@ -97,14 +97,14 @@ class EditPageBottomBar extends Component<EditPageBottomBarState> {
       const res: ResponseDataType<number> | null = await execFetch({ type, options });
 
       if (!res || !res.data) {
-        const strType = type === 'edit' ? '수정' : '작성';
+        const strType = type === "edit" ? "수정" : "작성";
         const customMessage = `서버에 오류가 있습니다. 글을 ${strType}할 수 없습니다.`;
         throw new CustomError({ name: `EditPage, ${type.toUpperCase()}`, customMessage });
       }
 
       const { message, statusCode, data: id } = res;
       const isResOK = statusCode >= 200 && statusCode < 400;
-      if (!isResOK) throw new Error(message);
+      if (!isResOK) throw new CustomError({ name: `EditPage, ${type.toUpperCase()}`, customMessage: message });
 
       editPublisher.setState({ ...editPublisher.state, editData: initEditState.editData, isEdited: true });
       return id > 0 ? id : -1;
