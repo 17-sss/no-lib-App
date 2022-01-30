@@ -1,8 +1,8 @@
-import { DetailPage, EditPage, MainPage, NotFoundPage } from "@src/pages";
 import { TargetType, ComponentItemType } from "../Component";
 import { Publisher } from "../Store";
 import CustomError from "../CustomError";
 import { RouterInfo } from ".";
+import { MainPage, NotFoundPage } from "@src/pages";
 
 interface PathProps {
   publisherList?: Publisher[];
@@ -26,7 +26,7 @@ export function renderPath({ href, publisherList, componentInfo }: RenderPathPro
   const $root = document.querySelector("#root");
   const info: RenderComponentItemType = componentInfo ?? {
     $target: $root,
-    Component: NotFoundPage,
+    Component: NotFoundPage, // 사용 시, NotFoundPage 컴포넌트 설정하기
   };
   if (!info.$target) info.$target = $root;
 
@@ -56,7 +56,6 @@ export function renderRouterPath({
     if (!routerInfo) throw new CustomError({ msgType: "NOT_FOUND_ROUTER_INFO", name: calledComponentName });
     const { pathname } = new URL(href);
     const info = routerInfo[pathname] ?? routerInfo["/notFound"];
-
     const { Component: PageComponent, props } = info;
     let $target = info.$target;
 
@@ -75,13 +74,11 @@ export function renderRouterPath({
 export function createRouterInfo($target: TargetType = document.querySelector("#root")): RouterInfo {
   const routerInfo: RouterInfo = {
     "/": { $target, Component: MainPage },
-    "/detail": { $target, Component: DetailPage },
-    "/edit": { $target, Component: EditPage },
-    "/write": { $target, Component: EditPage },
     "/notFound": { $target, Component: NotFoundPage },
   };
   return routerInfo;
 }
+
 
 interface QueryStringDetail {
   key?: string;

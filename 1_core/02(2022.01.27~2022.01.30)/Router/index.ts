@@ -21,7 +21,7 @@ class Router {
   constructor(
     protected readonly $target: Element | null,
     protected readonly routerInfo: RouterInfo,
-    private readonly publisherList: Publisher[] = []
+    private readonly publisherList: Publisher[]
   ) {
     try {
       if ($target === null) throw new CustomError({ msgType: "NOT_FOUND_TARGET", name: this.constructor.name });

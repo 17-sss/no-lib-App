@@ -1,4 +1,3 @@
-import { DetailPage, EditPage, MainPage, NotFoundPage } from "@src/pages";
 import { TargetType, ComponentItemType } from "../Component";
 import { Publisher } from "../Store";
 import CustomError from "../CustomError";
@@ -26,7 +25,7 @@ export function renderPath({ href, publisherList, componentInfo }: RenderPathPro
   const $root = document.querySelector("#root");
   const info: RenderComponentItemType = componentInfo ?? {
     $target: $root,
-    Component: NotFoundPage,
+    Component: NotFoundPage, // 사용 시, NotFoundPage 컴포넌트 설정하기
   };
   if (!info.$target) info.$target = $root;
 
@@ -72,6 +71,7 @@ export function renderRouterPath({
 }
 
 /** ✨ createRouterInfo: 이 애플리케이션에서 쓸 페이지 정보 생성 */
+/*
 export function createRouterInfo($target: TargetType = document.querySelector("#root")): RouterInfo {
   const routerInfo: RouterInfo = {
     "/": { $target, Component: MainPage },
@@ -82,6 +82,7 @@ export function createRouterInfo($target: TargetType = document.querySelector("#
   };
   return routerInfo;
 }
+*/
 
 interface QueryStringDetail {
   key?: string;
