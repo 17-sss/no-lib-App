@@ -8,9 +8,10 @@ interface PathProps {
   publisherList?: Publisher[];
 }
 
+type RenderComponentItemType = Partial<Pick<ComponentItemType, "$target">> & Omit<ComponentItemType, "$target">;
 interface RenderPathProps extends PathProps {
   href?: string;
-  componentInfo?: ComponentItemType;
+  componentInfo?: RenderComponentItemType;
 }
 
 /** ✨ renderPath: 주어진 href와 componentInfo의 정보를 활용하여 렌더링
@@ -20,10 +21,12 @@ export function renderPath({ href, publisherList, componentInfo }: RenderPathPro
   if (!href) href = new URL(window.location.href).origin + "/notFound";
   window.history.pushState({ href }, "", href);
 
-  const info: ComponentItemType<{}> = componentInfo ?? {
-    $target: document.querySelector("#root"),
+  const $root = document.querySelector("#root");
+  const info: RenderComponentItemType = componentInfo ?? {
+    $target: $root,
     Component: NotFoundPage,
   };
+  if (!info.$target) info.$target = $root;
 
   let { $target, Component: PageComponent, props } = info;
   if (typeof $target === "string") $target = document.querySelector($target);
@@ -48,7 +51,7 @@ export function renderRouterPath({
   publisherList,
 }: RenderRouterPathProps): void {
   try {
-    if (!routerInfo) throw new CustomError("NOT_FOUND_ROUTER_INFO", calledComponentName);
+    if (!routerInfo) throw new CustomError({ msgType: "NOT_FOUND_ROUTER_INFO", name: calledComponentName });
     const { pathname } = new URL(href);
     const info = routerInfo[pathname] ?? routerInfo["/notFound"];
 

@@ -1,6 +1,8 @@
+import { ResponseDataType } from "@common/types";
 import { Button } from "@src/components";
-import { Component, createRouterInfo, Props, RouterLink } from "@src/core";
+import { Component, createRouterInfo, CustomError, Props, renderPath, RouterLink } from "@src/core";
 import { editPublisher, mainPublisher } from "@src/core/Store";
+import { MainPage } from "@src/pages";
 import { execFetch } from "@src/utils/functions";
 import "./style.scss";
 
@@ -66,11 +68,20 @@ class DetailPageBottomBar extends Component<{}, DetailPageBottomBarProps> {
         body: JSON.stringify({ id }),
         headers: { "Content-Type": "application/json" },
       };
-      await execFetch({ type: "delete", options });
+      const res: ResponseDataType | null = await execFetch({ type: "delete", options });
+      if (!res) throw new CustomError({ msgType: "RESPONSE_IS_NULL", name: "DetailPage, DELETE" });
+
+      const { message, statusCode } = res;
+      const isResOK = statusCode >= 200 && statusCode < 400;
+      if (!isResOK) throw new Error(message);
+
       editPublisher.setState({ ...editPublisher.state, isEdited: true });
-      window.history.back();
+
+      renderPath({ href: "/", componentInfo: { Component: MainPage } });
     } catch (e) {
+      const { message } = e as unknown as Error;
       console.error(e);
+      alert(message);
     }
   }
 

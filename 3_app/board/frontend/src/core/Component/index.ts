@@ -41,8 +41,9 @@ class Component<S = {}, P extends Props = DefaultProps> {
 
   constructor(protected readonly $target: TargetType, protected props: P = {} as Props<P>) {
     try {
-      if ($target === null) throw new CustomError("NOT_FOUND_TARGET", this.constructor.name);
-      else if (typeof $target === "string") this.$target = document.querySelector($target);
+      if (typeof $target === "string") this.$target = document.querySelector($target);
+      if (this.$target === null) throw new CustomError({ msgType: "NOT_FOUND_TARGET", name: this.constructor.name });
+
       this.init();
       this.initSubscriber();
       this.render();

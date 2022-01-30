@@ -24,7 +24,7 @@ class Router {
     private readonly publisherList: Publisher[]
   ) {
     try {
-      if ($target === null) throw new CustomError("NOT_FOUND_TARGET", this.constructor.name);
+      if ($target === null) throw new CustomError({ msgType: "NOT_FOUND_TARGET", name: this.constructor.name });
       this.init();
     } catch (e) {
       console.error(e);

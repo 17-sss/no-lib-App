@@ -1,4 +1,4 @@
-import { Component, Props } from "@src/core";
+import { Component, CustomError, Props } from "@src/core";
 import { postDataKorKeys } from "@src/utils/types";
 import { PostData, ResponseDataType } from "@common/types";
 import { execFetch } from "@src/utils/functions";
@@ -60,14 +60,21 @@ class DetailPageContent extends Component<DetailPageContentState, DetailPageCont
   private async setPostData(id: number): Promise<void> {
     try {
       const options = { method: "GET", id };
-      const result: ResponseDataType<PostData> | null = await execFetch({ type: "getPost", options });
-      if (!result || !result.data) return;
-      const { data: currData } = result;
+      const res: ResponseDataType<PostData> | null = await execFetch({ type: "getPost", options });
+      if (!res || !res.data)
+        throw new CustomError({ name: "DetailPage, GET CONTENT", msgType: "RESPONSE_IS_NULL" });
+
+      const { message, statusCode, data: currData } = res;
+      const isResOK = statusCode >= 200 && statusCode < 400;
+      if (!isResOK) throw new Error(message);
+
       if (currData.createdDate) currData.createdDate = new Date(currData.createdDate);
 
       this.setState({ ...this.state, currData });
     } catch (e) {
+      const { message } = e as unknown as Error;
       console.error(e);
+      alert(message);
     }
   }
   // ------

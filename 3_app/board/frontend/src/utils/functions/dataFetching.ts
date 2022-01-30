@@ -1,4 +1,5 @@
 import { PostData, ResponseDataType } from "@common/types";
+import { CustomError } from "@src/core";
 
 type RequestPathTypes = "getPost" | "write" | "edit" | "delete";
 interface ExecFetchProps {
@@ -41,10 +42,10 @@ export async function execFetch<T = any>({ type, options }: ExecFetchProps = { t
 /** ✨ getAllPostData: 서버에서 모든 게시물 데이터를 가져와서 정렬 및 추가 작업 후 반환 */
 export async function getAllPostData(): Promise<PostData[] | undefined> {
   try {
-    const resData = await execFetch<ResponseDataType<PostData[]>>();
-    if (!resData || !resData.data) return;
+    const res = await execFetch<ResponseDataType<PostData[]>>();
+    if (!res || !res.data) throw new CustomError({ name: `Board, GET ALL DATA`, msgType: "RESPONSE_IS_NULL" });
 
-    const { data: arrPosts } = resData;
+    const { data: arrPosts } = res;
     arrPosts.forEach((post, i) => {
       const { createdDate } = post;
       if (!createdDate) return;
@@ -56,6 +57,9 @@ export async function getAllPostData(): Promise<PostData[] | undefined> {
     });
     return arrPosts;
   } catch (e) {
+    const { message } = e as unknown as Error;
     console.error(e);
+    alert(message);
+    return undefined;
   }
 }

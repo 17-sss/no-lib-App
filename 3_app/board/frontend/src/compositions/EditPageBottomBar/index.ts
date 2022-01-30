@@ -1,6 +1,6 @@
 import { PostData, ResponseDataType } from "@common/types";
 import { Button } from "@src/components";
-import { Component, createRouterInfo, RouterLink, RouterLinkProps } from "@src/core";
+import { Component, createRouterInfo, CustomError, RouterLink, RouterLinkProps } from "@src/core";
 import { editPublisher, mainPublisher, initEditState } from "@src/core/Store";
 import { execFetch } from "@src/utils/functions";
 import { requiredPostDataKeys } from "@src/utils/types";
@@ -73,11 +73,21 @@ class EditPageBottomBar extends Component {
       const type = isEdit ? "edit" : "write";
       const method = isEdit ? "PUT" : "POST";
       const options = { method, body: JSON.stringify(editData), headers: { "Content-Type": "application/json" } };
-      const result: ResponseDataType<number> | null = await execFetch({ type, options });
+      const res: ResponseDataType<number> | null = await execFetch({ type, options });
+
+      if (!res || !res.data)
+        throw new CustomError({ name: `EditPage, ${type.toUpperCase()}`, msgType: "RESPONSE_IS_NULL" });
+
+      const { message, statusCode, data: id } = res;
+      const isResOK = statusCode >= 200 && statusCode < 400;
+      if (!isResOK) throw new Error(message);
+
       editPublisher.setState({ ...editPublisher.state, editData: initEditState.editData, isEdited: true });
-      return result?.data ? result.data : -1;
+      return id <= 0 ? id : -1;
     } catch (e) {
+      const { message } = e as unknown as Error;
       console.error(e);
+      alert(message);
       return -1;
     }
   }
