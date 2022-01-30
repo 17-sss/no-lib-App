@@ -1,12 +1,14 @@
 import { Board, Pagination } from "@src/components";
-import { Component } from "@src/core";
+import { Component, CustomError } from "@src/core";
 import { mainPublisher, MainFilterOptions, initMainState, createPostData, editPublisher } from "@src/core/Store";
+import { Modal } from "@src/compositions";
 import { getAllPostData } from "@src/utils/functions";
 
 import "./style.scss";
 
 interface MainPageBoardState {
-  isUpdate: boolean;
+  isUpdate?: boolean;
+  errMessage?: string;
 }
 
 class MainPageBoard extends Component<MainPageBoardState> {
@@ -47,6 +49,20 @@ class MainPageBoard extends Component<MainPageBoardState> {
     const pageOnlyPostData = createPostData({ filterOptions, postData, isFullData: true });
     const max = Math.ceil(pageOnlyPostData.length / numPost);
     new Pagination(".main__page--board", { pageNum, max });
+
+    if (this.state && this.state.errMessage) {
+      const { errMessage: noticeText } = this.state;
+      new Modal(".main__page--board", {
+        noticeText,
+        showButtons: "CANCEL",
+        buttonTexts: { cancel: "닫기" },
+        clickHandler: {
+          handleCancelClick: () => {
+            this.setState({ ...this.state, errMessage: undefined }, { isSetEvents: false });
+          },
+        },
+      });
+    }
   }
 
   protected setEvents(): void {
@@ -60,16 +76,28 @@ class MainPageBoard extends Component<MainPageBoardState> {
    * - 초기 렌더링에는 무조건 실행하지만, 작성 & 수정때는 mainPublisher에 등록된 함수들은 실행되면 안됨.
    */
   private async initGetAllPostData() {
-    const latestPostdata = await getAllPostData();
-    if (!latestPostdata) return;
-    const { isEdited } = editPublisher.state;
+    try {
+      const res = await getAllPostData();
+      if (!res) return;
+      const { isEdited } = editPublisher.state;
+      const { data: latestPostdata, message } = res;
 
-    initMainState.postData = latestPostdata;
-    mainPublisher.setState(
-      { ...mainPublisher.state, postData: [...latestPostdata] },
-      { notExec: isEdited ? true : undefined }
-    );
-    if (isEdited) editPublisher.setState({ ...editPublisher.state, isEdited: false }, { notExec: true });
+      if (!latestPostdata || (!latestPostdata && message)) {
+        const customMessage = `서버에 데이터가 없거나 오류가 있습니다. 게시글 작성을 시도해주세요.`;
+        throw new CustomError({ name: `MainPage, GET ALL POST`, customMessage });
+      }
+      initMainState.postData = latestPostdata;
+
+      mainPublisher.setState(
+        { ...mainPublisher.state, postData: [...latestPostdata] },
+        { notExec: isEdited ? true : undefined }
+      );
+      if (isEdited) editPublisher.setState({ ...editPublisher.state, isEdited: false }, { notExec: true });
+    } catch (e) {
+      const { message: errMessage } = e as unknown as Error;
+      console.error(e);
+      this.setState({ ...this.state, errMessage }, { isSetEvents: false });
+    }
   }
 
   // ------

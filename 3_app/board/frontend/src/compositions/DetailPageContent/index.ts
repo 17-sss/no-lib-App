@@ -1,11 +1,14 @@
-import { Component, CustomError, Props } from "@src/core";
+import { Component, CustomError, Props, renderPath } from "@src/core";
 import { postDataKorKeys } from "@src/utils/types";
+import { MainPage } from "@src/pages";
+import { Modal } from "@src/compositions";
 import { PostData, ResponseDataType } from "@common/types";
 import { execFetch } from "@src/utils/functions";
 import "./style.scss";
 
 interface DetailPageContentState {
   currData?: PostData | null;
+  errMessage?: string;
 }
 interface DetailPageContentProps extends Props {
   dataId?: string;
@@ -33,7 +36,23 @@ class DetailPageContent extends Component<DetailPageContentState, DetailPageCont
     </div>`;
   }
 
-  protected setChildren(): void {}
+  protected setChildren(): void {
+    if (this.state && this.state.errMessage) {
+      const { errMessage: noticeText } = this.state;
+      new Modal(".detail__page--content", {
+        noticeText,
+        buttonTexts: {
+          confirm: "목록으로",
+        },
+        clickHandler: {
+          handleConfirmClick: () => {
+            this.setState({ ...this.state, errMessage: undefined }, { isSetEvents: false });
+            renderPath({ href: "/", componentInfo: { Component: MainPage } });
+          },
+        },
+      });
+    }
+  }
 
   protected setEvents(): void {}
 
@@ -61,8 +80,7 @@ class DetailPageContent extends Component<DetailPageContentState, DetailPageCont
     try {
       const options = { method: "GET", id };
       const res: ResponseDataType<PostData> | null = await execFetch({ type: "getPost", options });
-      if (!res || !res.data)
-        throw new CustomError({ name: "DetailPage, GET CONTENT", msgType: "RESPONSE_IS_NULL" });
+      if (!res || !res.data) throw new CustomError({ name: "DetailPage, GET CONTENT", msgType: "RESPONSE_IS_NULL" });
 
       const { message, statusCode, data: currData } = res;
       const isResOK = statusCode >= 200 && statusCode < 400;
@@ -72,9 +90,9 @@ class DetailPageContent extends Component<DetailPageContentState, DetailPageCont
 
       this.setState({ ...this.state, currData });
     } catch (e) {
-      const { message } = e as unknown as Error;
+      const { message: errMessage } = e as unknown as Error;
       console.error(e);
-      alert(message);
+      this.setState({ ...this.state, errMessage }, { isSetEvents: false });
     }
   }
   // ------

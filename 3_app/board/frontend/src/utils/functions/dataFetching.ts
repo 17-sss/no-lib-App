@@ -39,8 +39,13 @@ export async function execFetch<T = any>({ type, options }: ExecFetchProps = { t
 
 // ---------
 
+interface GetAllPostReturnType {
+  message?: string;
+  data?: PostData[];
+}
+
 /** ✨ getAllPostData: 서버에서 모든 게시물 데이터를 가져와서 정렬 및 추가 작업 후 반환 */
-export async function getAllPostData(): Promise<PostData[] | undefined> {
+export async function getAllPostData(): Promise<GetAllPostReturnType> {
   try {
     const res = await execFetch<ResponseDataType<PostData[]>>();
     if (!res || !res.data) throw new CustomError({ name: `Board, GET ALL DATA`, msgType: "RESPONSE_IS_NULL" });
@@ -55,11 +60,10 @@ export async function getAllPostData(): Promise<PostData[] | undefined> {
       if (!a.id || !b.id) return 0;
       return b.id - a.id;
     });
-    return arrPosts;
+    return { data: arrPosts };
   } catch (e) {
     const { message } = e as unknown as Error;
     console.error(e);
-    alert(message);
-    return undefined;
+    return { message };
   }
 }

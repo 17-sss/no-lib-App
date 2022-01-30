@@ -1,13 +1,18 @@
 import { PostData, ResponseDataType } from "@common/types";
 import { Button } from "@src/components";
-import { Component, createRouterInfo, CustomError, RouterLink, RouterLinkProps } from "@src/core";
+import { Component, createRouterInfo, CustomError, renderPath, RouterLink, RouterLinkProps } from "@src/core";
 import { editPublisher, mainPublisher, initEditState } from "@src/core/Store";
+import { MainPage } from "@src/pages";
+import { Modal } from "@src/compositions";
 import { execFetch } from "@src/utils/functions";
 import { requiredPostDataKeys } from "@src/utils/types";
-
 import "./style.scss";
 
-class EditPageBottomBar extends Component {
+interface EditPageBottomBarState {
+  errMessage?: string;
+}
+
+class EditPageBottomBar extends Component<EditPageBottomBarState> {
   protected setTemplate(): string {
     const { componentId } = this;
     return `<div class="edit__page--bottombar" data-component-id=${componentId}></div>`;
@@ -29,6 +34,22 @@ class EditPageBottomBar extends Component {
       },
     };
     new RouterLink(".edit__page--bottombar", routerLinkProps);
+
+    if (this.state && this.state.errMessage) {
+      const { errMessage: noticeText } = this.state;
+      new Modal(".edit__page--bottombar", {
+        noticeText,
+        buttonTexts: {
+          confirm: "목록으로",
+        },
+        clickHandler: {
+          handleConfirmClick: () => {
+            this.setState({ ...this.state, errMessage: undefined }, { isSetEvents: false });
+            renderPath({ href: "/", componentInfo: { Component: MainPage } });
+          },
+        },
+      });
+    }
   }
 
   protected setEvents(): void {
@@ -75,19 +96,23 @@ class EditPageBottomBar extends Component {
       const options = { method, body: JSON.stringify(editData), headers: { "Content-Type": "application/json" } };
       const res: ResponseDataType<number> | null = await execFetch({ type, options });
 
-      if (!res || !res.data)
-        throw new CustomError({ name: `EditPage, ${type.toUpperCase()}`, msgType: "RESPONSE_IS_NULL" });
+      if (!res || !res.data) {
+        const strType = type === 'edit' ? '수정' : '작성';
+        const customMessage = `서버에 오류가 있습니다. 글을 ${strType}할 수 없습니다.`;
+        throw new CustomError({ name: `EditPage, ${type.toUpperCase()}`, customMessage });
+      }
 
       const { message, statusCode, data: id } = res;
       const isResOK = statusCode >= 200 && statusCode < 400;
       if (!isResOK) throw new Error(message);
 
       editPublisher.setState({ ...editPublisher.state, editData: initEditState.editData, isEdited: true });
-      return id <= 0 ? id : -1;
+      return id > 0 ? id : -1;
     } catch (e) {
-      const { message } = e as unknown as Error;
+      const { message: errMessage } = e as unknown as Error;
       console.error(e);
-      alert(message);
+      this.setState({ ...this.state, errMessage }, { isSetEvents: false });
+
       return -1;
     }
   }

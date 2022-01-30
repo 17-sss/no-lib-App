@@ -3,14 +3,19 @@ import { Button } from "@src/components";
 import { Component, createRouterInfo, CustomError, Props, renderPath, RouterLink } from "@src/core";
 import { editPublisher, mainPublisher } from "@src/core/Store";
 import { MainPage } from "@src/pages";
+import { Modal } from "@src/compositions";
 import { execFetch } from "@src/utils/functions";
 import "./style.scss";
+
+interface DetailPageBottomBarState {
+  errMessage?: string;
+}
 
 interface DetailPageBottomBarProps extends Props {
   dataId?: string;
 }
 
-class DetailPageBottomBar extends Component<{}, DetailPageBottomBarProps> {
+class DetailPageBottomBar extends Component<DetailPageBottomBarState, DetailPageBottomBarProps> {
   protected setTemplate(): string {
     const { componentId } = this;
     return `<div class="detail__page--bottombar" data-component-id=${componentId}></div>`;
@@ -33,6 +38,22 @@ class DetailPageBottomBar extends Component<{}, DetailPageBottomBarProps> {
     });
     new Button(".detail__page--bottombar", { name: "delete", text: "삭제" });
     new RouterLink(".detail__page--bottombar", { ...commonLinkProps, href: `/`, text: "목록" });
+
+    if (this.state && this.state.errMessage) {
+      const { errMessage: noticeText } = this.state;
+      new Modal(".detail__page--bottombar", {
+        noticeText,
+        buttonTexts: {
+          confirm: "목록으로",
+        },
+        clickHandler: {
+          handleConfirmClick: () => {
+            this.setState({ ...this.state, errMessage: undefined }, { isSetEvents: false });
+            renderPath({ href: "/", componentInfo: { Component: MainPage } });
+          },
+        },
+      });
+    }
   }
 
   protected setEvents(): void {
@@ -79,9 +100,9 @@ class DetailPageBottomBar extends Component<{}, DetailPageBottomBarProps> {
 
       renderPath({ href: "/", componentInfo: { Component: MainPage } });
     } catch (e) {
-      const { message } = e as unknown as Error;
+      const { message: errMessage } = e as unknown as Error;
       console.error(e);
-      alert(message);
+      this.setState({ ...this.state, errMessage }, { isSetEvents: false });
     }
   }
 

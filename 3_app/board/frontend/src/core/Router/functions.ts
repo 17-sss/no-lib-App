@@ -16,6 +16,8 @@ interface RenderPathProps extends PathProps {
 
 /** ✨ renderPath: 주어진 href와 componentInfo의 정보를 활용하여 렌더링
  *  - 아무런 값이 없다면 기본 값은 notFound 페이지로 이동하며 렌더링
+ *    - href가 없다면 기본값은 '/notFound'
+ *    - componentInfo가 없다면 기본값은 NotFoundPage 컴포넌트
  */
 export function renderPath({ href, publisherList, componentInfo }: RenderPathProps = {}): void {
   if (!href) href = new URL(window.location.href).origin + "/notFound";

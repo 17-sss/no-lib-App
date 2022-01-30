@@ -82,7 +82,7 @@ class MainPageTopBar extends Component {
   // 새로고침
   private async refrashPostData(): Promise<void> {
     try {
-      const latestPostdata = await getAllPostData();
+      const { data: latestPostdata } = await getAllPostData();
       if (!latestPostdata) return;
       initMainState.postData = latestPostdata;
       mainPublisher.setState({ ...mainPublisher.state, postData: [...latestPostdata], isRefresh: true });
