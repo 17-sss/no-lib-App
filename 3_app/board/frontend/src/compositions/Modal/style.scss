@@ -1,0 +1,31 @@
+@import "../../utils/style/mixin.scss";
+
+.app-error-modal {
+  @include setFlex();
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background-color: var(--color-black-opacity);
+
+  .inner {
+    @include setFlex(column, center, flex-start);
+    color: var(--color-black);
+    background-color: var(--color-white);
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 0 0 0.3px var(--color-black);
+
+    min-width: 500px;
+    min-height: 50px;
+    row-gap: 20px;
+  }
+
+  .inner .buttons {
+    @include setFlex();
+    column-gap: 4px;
+    margin-left: auto;
+  }
+}
