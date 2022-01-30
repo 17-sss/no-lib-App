@@ -4,7 +4,7 @@ import "./style.scss";
 
 type ButtonHandlerNames = "handleConfirmClick" | "handleCancelClick";
 type ButtonNames = "confirm" | "cancel";
-interface ModalProps extends Props {
+export interface ModalProps extends Props {
   noticeText: string;
   showButtons?: "CONFIRM" | "CANCEL" | "ALL";
   buttonTexts?: {

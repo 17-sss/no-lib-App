@@ -6,9 +6,11 @@ import { MainPage } from "@src/pages";
 import { Modal } from "@src/compositions";
 import { execFetch } from "@src/utils/functions";
 import "./style.scss";
+import { ModalProps } from "../Modal";
 
 interface DetailPageBottomBarState {
   errMessage?: string;
+  deleteStatus?: boolean;
 }
 
 interface DetailPageBottomBarProps extends Props {
@@ -38,22 +40,7 @@ class DetailPageBottomBar extends Component<DetailPageBottomBarState, DetailPage
     });
     new Button(".detail__page--bottombar", { name: "delete", text: "삭제" });
     new RouterLink(".detail__page--bottombar", { ...commonLinkProps, href: `/`, text: "목록" });
-
-    if (this.state && this.state.errMessage) {
-      const { errMessage: noticeText } = this.state;
-      new Modal(".detail__page--bottombar", {
-        noticeText,
-        buttonTexts: {
-          confirm: "목록으로",
-        },
-        clickHandler: {
-          handleConfirmClick: () => {
-            this.setState({ ...this.state, errMessage: undefined }, { isSetEvents: false });
-            renderPath({ href: "/", componentInfo: { Component: MainPage } });
-          },
-        },
-      });
-    }
+    this.setDetailBottomModal();
   }
 
   protected setEvents(): void {
@@ -63,6 +50,42 @@ class DetailPageBottomBar extends Component<DetailPageBottomBarState, DetailPage
   // --------------------------------------------------
 
   // [1] 일반
+  private setDetailBottomModal(): void {
+    if (!this.state || (!this.state.errMessage && !this.state.deleteStatus)) return;
+    const modalProps = this.createDeleteModalProps();
+
+    // 오류가 있을 경우
+    const { errMessage } = this.state;
+    if (errMessage) {
+      modalProps.noticeText = errMessage;
+      modalProps.clickHandler.handleConfirmClick = () => {
+        this.setState({ ...this.state, errMessage: undefined }, { isSetEvents: false });
+        renderPath({ href: "/", componentInfo: { Component: MainPage } });
+      };
+    }
+
+    new Modal(".detail__page--bottombar", {
+      ...modalProps,
+      showButtons: errMessage ? "CONFIRM" : "ALL",
+      buttonTexts: errMessage ? { confirm: "목록으로" } : undefined,
+    });
+  }
+
+  // Modal에 props로 전달되는 요소들 - 삭제 전용
+  private createDeleteModalProps(): ModalProps {
+    const noticeText = "정말 삭제하시겠습니까?";
+    const setInitDeleteStatus = () => this.setState({ ...this.state, deleteStatus: undefined }, { isSetEvents: false });
+    const handleConfirmClick: () => void = () => {
+      setInitDeleteStatus();
+      this.requestDeleteData();
+    };
+    const handleCancelClick: () => void = setInitDeleteStatus;
+    return {
+      noticeText,
+      clickHandler: { handleCancelClick, handleConfirmClick },
+    };
+  }
+
   // ------
 
   // [2] Events
@@ -74,13 +97,10 @@ class DetailPageBottomBar extends Component<DetailPageBottomBarState, DetailPage
     const $target = e.target as HTMLElement;
     const isButton = $target.classList.contains("app-button") && $target instanceof HTMLButtonElement;
     if (!isButton) return;
-    if ($target.name === "delete") {
-      const isDelete = confirm("정말 삭제하시겠습니까?");
-      if (!isDelete) return;
-      this.requestDeleteData();
-    }
+    if ($target.name === "delete") this.setState({ ...this.state, deleteStatus: true }, { isSetEvents: false });
   }
-  // 서버로 전송 (게시글 삭제)
+
+  // 서버로 전송 (게시글 삭제) -- Modal 컴포넌트에서 처리
   private async requestDeleteData(): Promise<void> {
     try {
       const { dataId: id } = this.props;
