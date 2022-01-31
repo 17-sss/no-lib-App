@@ -21,8 +21,12 @@
     "noEmit": false,                              /* 결과 파일 내보낼지 여부 (이거 true하면 webpack serve 작동 불가) */
     "allowJs": true,                               /* 자바스크립트 파일 컴파일 허용 여부 */
 
-    "baseUrl": "./",
-    "paths": { "@src/*": ["src/*"], "@public/*": ["public/*"] }, /* 절대 경로 설정 */
+    "baseUrl": "./",          /* non-absolute한 모듈 이름을 처리할 기준 디렉토리 */
+    "paths": {
+      "@src/*": ["src/*"],
+      "@public/*": ["public/*"],
+      "@common/*": ["../common/*"]
+    } /* 'baseUrl'를 기준으로 불러올 모듈의 위치를 재지정하는 엔트리 시리즈 */
   },
 
   "include": ["src/**/*"],
