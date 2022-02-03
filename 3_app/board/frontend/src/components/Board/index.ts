@@ -1,4 +1,5 @@
-import { Component, createRouterInfo, Props, RouterLink, TargetType } from "@src/core";
+import { Component, Props, RouterLink, TargetType } from "@src/core";
+import { DetailPage } from "@src/pages";
 import { editPublisher, mainPublisher } from "@src/core/Store";
 import { PostData } from "@common/types";
 import "./style.scss";
@@ -46,14 +47,13 @@ class Board extends Component<{}, BoardProps> {
     } = this;
 
     // 제목 생성 (RouterLink)
-    const routerInfo = createRouterInfo();
     arrPostData.forEach(({ id, subject }) => {
       const $tdSubject = document.querySelector(`tr[data-id="${id}"] td.subject`);
       if (!$tdSubject) return;
       new RouterLink($tdSubject, {
         href: `/detail?id=${id}`,
         text: subject ?? '제목 없음',
-        routerInfo,
+        componentInfo: { Component: DetailPage },
         publisherList: [mainPublisher, editPublisher],
       });
     });

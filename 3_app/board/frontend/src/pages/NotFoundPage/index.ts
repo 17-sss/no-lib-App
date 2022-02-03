@@ -1,6 +1,7 @@
-import { Component, createRouterInfo, RouterLink } from "@src/core";
+import { Component, RouterLink } from "@src/core";
 import { Span } from "@src/components";
 import "./style.scss";
+import { MainPage } from "..";
 
 class NotFoundPage extends Component {
   protected setTemplate(): string {
@@ -9,8 +10,12 @@ class NotFoundPage extends Component {
   }
   protected setChildren(): void {
     new Span(".not-found__page", { text: `페이지를 찾을 수 없습니다.`, fontSize: 36, isBold: true });
-    const routerInfo = createRouterInfo();
-    new RouterLink(".not-found__page", { text: "메인으로", isButton: true, href: "/", routerInfo });
+    new RouterLink(".not-found__page", {
+      text: "메인으로",
+      isButton: true,
+      href: "/",
+      componentInfo: { Component: MainPage },
+    });
   }
 }
 export default NotFoundPage;

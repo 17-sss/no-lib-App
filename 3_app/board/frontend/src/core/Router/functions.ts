@@ -1,14 +1,14 @@
 import { DetailPage, EditPage, MainPage, NotFoundPage } from "@src/pages";
-import { TargetType, ComponentItemType } from "../Component";
+import { TargetType, RenderComponentItemType } from "../Component";
 import { Publisher } from "../Store";
 import CustomError from "../CustomError";
 import { RouterInfo } from ".";
 
 interface PathProps {
   publisherList?: Publisher[];
+  calledComponentName?: string;
 }
 
-type RenderComponentItemType = Partial<Pick<ComponentItemType, "$target">> & Omit<ComponentItemType, "$target">;
 interface RenderPathProps extends PathProps {
   href?: string;
   componentInfo?: RenderComponentItemType;
@@ -19,36 +19,39 @@ interface RenderPathProps extends PathProps {
  *    - href가 없다면 기본값은 '/notFound'
  *    - componentInfo가 없다면 Component의 기본값은 NotFoundPage 컴포넌트
  */
-export function renderPath({ href, publisherList, componentInfo }: RenderPathProps = {}): void {
-  if (!href) href = new URL(window.location.href).origin + "/notFound";
-  window.history.pushState({ href }, "", href);
+export function renderPath({ componentInfo, href, calledComponentName, publisherList }: RenderPathProps = {}): void {
+  try {
+    if (!href) href = new URL(window.location.href).origin + "/notFound";
+    window.history.pushState({ href }, "", href);
 
-  const $root = document.querySelector("#root");
-  const info: RenderComponentItemType = componentInfo ?? {
-    $target: $root,
-    Component: NotFoundPage,
-  };
-  if (!info.$target) info.$target = $root;
+    const $root = document.querySelector("#root");
+    const info: RenderComponentItemType = componentInfo ?? {
+      $target: $root,
+      Component: NotFoundPage,
+    };
+    if (!info.$target) info.$target = $root;
 
-  let { $target, Component: PageComponent, props } = info;
-  if (typeof $target === "string") $target = document.querySelector($target);
-  if (!$target) return;
-  $target.innerHTML = "";
+    let { $target, Component: PageComponent, props } = info;
+    if (typeof $target === "string") $target = document.querySelector($target);
+    if (!$target) throw new CustomError({ msgType: "NOT_FOUND_TARGET", name: calledComponentName ?? "unknown" });
+    $target.innerHTML = "";
 
-  if (publisherList) publisherList.forEach((pub) => pub.clear());
-  new PageComponent($target, props);
+    if (publisherList) publisherList.forEach((pub) => pub.clear());
+    new PageComponent($target, props);
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 interface RenderRouterPathProps extends PathProps {
   href: string;
   routerInfo: RouterInfo;
-  calledComponentName?: string;
 }
 
 /** ✨ renderRouterPath: 현재 path를 기반으로 routerInfo에서 페이지 컴포넌트 정보를 불러와서 렌더링 */
 export function renderRouterPath({
-  href,
   routerInfo,
+  href,
   calledComponentName,
   publisherList,
 }: RenderRouterPathProps): void {

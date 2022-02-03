@@ -1,6 +1,7 @@
 import { Button, Input, SelectBox } from "@src/components";
 import { Component, createRouterInfo, RouterLink } from "@src/core";
 import { mainPublisher, initMainState, MainFilterOptions, editPublisher, initEditState } from "@src/core/Store";
+import { EditPage } from "@src/pages";
 import { getAllPostData } from "@src/utils/functions";
 import "./style.scss";
 
@@ -24,12 +25,12 @@ class MainPageTopBar extends Component {
     new RouterLink(createSelector(1), {
       href: "/write",
       text: "작성",
-      routerInfo,
+      componentInfo: { Component: EditPage },
       isButton: true,
       publisherList: [mainPublisher, editPublisher],
       callbackOption: {
         func: () => editPublisher.setState({ ...initEditState }),
-        runPosition: "beforePushState",
+        runPosition: "beforeRenderPath",
       },
     });
     new Input(createSelector(2), {

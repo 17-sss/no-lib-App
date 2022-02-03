@@ -1,12 +1,11 @@
 import { ResponseDataType } from "@common/types";
+import { Component, CustomError, Props, renderPath, RouterLink } from "@src/core";
 import { Button } from "@src/components";
-import { Component, createRouterInfo, CustomError, Props, renderPath, RouterLink } from "@src/core";
+import Modal, { ModalProps } from "@src/compositions/Modal";
+import { EditPage, MainPage } from "@src/pages";
 import { editPublisher, mainPublisher } from "@src/core/Store";
-import { MainPage } from "@src/pages";
-import { Modal } from "@src/compositions";
 import { execFetch } from "@src/utils/functions";
 import "./style.scss";
-import { ModalProps } from "../Modal";
 
 interface DetailPageBottomBarState {
   errMessage?: string;
@@ -25,21 +24,29 @@ class DetailPageBottomBar extends Component<DetailPageBottomBarState, DetailPage
 
   protected setChildren(): void {
     const { props } = this;
-    const routerInfo = createRouterInfo();
-    const commonLinkProps = { isButton: true, routerInfo, publisherList: [mainPublisher, editPublisher] };
+    const commonLinkProps = {
+      isButton: true,
+      publisherList: [mainPublisher, editPublisher],
+    };
     const editId = props.dataId ? +props.dataId : -1;
 
     new RouterLink(".detail__page--bottombar", {
       ...commonLinkProps,
       href: `/edit`,
       text: "수정",
+      componentInfo: { Component: EditPage },
       callbackOption: {
         func: () => mainPublisher.setState({ ...mainPublisher.state, editId }),
         runPosition: "afterRenderPath",
       },
     });
     new Button(".detail__page--bottombar", { name: "delete", text: "삭제" });
-    new RouterLink(".detail__page--bottombar", { ...commonLinkProps, href: `/`, text: "목록" });
+    new RouterLink(".detail__page--bottombar", {
+      ...commonLinkProps,
+      href: `/`,
+      text: "목록",
+      componentInfo: { Component: MainPage },
+    });
     this.setDetailBottomModal();
   }
 

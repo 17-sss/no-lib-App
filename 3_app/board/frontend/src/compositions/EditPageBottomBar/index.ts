@@ -1,8 +1,8 @@
 import { PostData, ResponseDataType } from "@common/types";
 import { Button } from "@src/components";
-import { Component, createRouterInfo, CustomError, renderPath, RouterLink, RouterLinkProps } from "@src/core";
+import { Component, CustomError, renderPath, RouterLink, RouterLinkProps } from "@src/core";
 import { editPublisher, mainPublisher, initEditState } from "@src/core/Store";
-import { MainPage } from "@src/pages";
+import { DetailPage, MainPage } from "@src/pages";
 import { Modal } from "@src/compositions";
 import { execFetch } from "@src/utils/functions";
 import { requiredPostDataKeys } from "@src/utils/types";
@@ -19,8 +19,7 @@ class EditPageBottomBar extends Component<EditPageBottomBarState> {
   }
 
   protected setChildren(): void {
-    const routerInfo = createRouterInfo();
-    const commonLinkProps = { isButton: true, routerInfo, publisherList: [mainPublisher, editPublisher] };
+    const commonLinkProps = { isButton: true, componentInfo: { Component: DetailPage }, publisherList: [mainPublisher, editPublisher] };
     new Button(".edit__page--bottombar", { name: "goback", text: "뒤로" });
     const routerLinkProps: RouterLinkProps<number> = {
       ...commonLinkProps,
@@ -29,7 +28,7 @@ class EditPageBottomBar extends Component<EditPageBottomBarState> {
       text: "전송",
       callbackOption: {
         func: async (): Promise<number> => await this.regsiterEditData(),
-        runPosition: "beforePushState",
+        runPosition: "beforeRenderPath",
         options: { isID: true },
       },
     };

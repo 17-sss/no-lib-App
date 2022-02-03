@@ -1,16 +1,16 @@
-import Component, { Props, TargetType } from "../Component";
-import { renderRouterPath, RouterInfo } from "../Router";
+import Component, { Props, TargetType, RenderComponentItemType } from "../Component";
+import { renderPath } from "../Router";
 import { Publisher } from "../Store";
 import "./style.scss";
 
 type DefaultLinkProps = Pick<HTMLAnchorElement, "href" | "text"> & Partial<Pick<HTMLAnchorElement, "name">>;
 export interface RouterLinkProps<T = unknown> extends Props, DefaultLinkProps {
-  routerInfo: RouterInfo;
+  componentInfo: RenderComponentItemType;
   isButton?: boolean;
   publisherList?: Publisher[];
   callbackOption?: {
     func: () => Promise<T> | T;
-    runPosition: "beforePushState" | "afterRenderPath";
+    runPosition: "beforeRenderPath" | "afterRenderPath";
     options?: { isID: boolean };
   };
 }
@@ -53,7 +53,7 @@ class RouterLink extends Component<{}, RouterLinkProps> {
     if (!href) return;
 
     const { callbackOption: cb } = this.props;
-    if (cb?.func && cb.runPosition === "beforePushState") {
+    if (cb?.func && cb.runPosition === "beforeRenderPath") {
       const execFunc = await cb.func();
 
       const isBooleanFunc = typeof execFunc === "boolean";
@@ -66,11 +66,9 @@ class RouterLink extends Component<{}, RouterLinkProps> {
       }
     }
 
-    window.history.pushState({ href }, "", href);
-
-    const { routerInfo, publisherList } = this.props;
+    const { componentInfo, publisherList } = this.props;
     const calledComponentName = `${this.constructor.name}(${this.componentId})`;
-    renderRouterPath({ href, calledComponentName, routerInfo, publisherList });
+    renderPath({ componentInfo, href, calledComponentName, publisherList });
     if (cb?.func && cb.runPosition === "afterRenderPath") cb.func();
   }
 }
