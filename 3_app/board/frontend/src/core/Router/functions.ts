@@ -1,5 +1,5 @@
 import { DetailPage, EditPage, MainPage, NotFoundPage } from "@src/pages";
-import { TargetType, RenderComponentItemType } from "../Component";
+import { TargetType, ComponentItemType } from "../Component";
 import { Publisher } from "../Store";
 import CustomError from "../CustomError";
 import { RouterInfo } from ".";
@@ -11,7 +11,7 @@ interface PathProps {
 
 interface RenderPathProps extends PathProps {
   href?: string;
-  componentInfo?: RenderComponentItemType;
+  componentInfo?: ComponentItemType;
 }
 
 /** ✨ renderPath: 주어진 href와 componentInfo의 정보를 활용하여 렌더링
@@ -25,7 +25,7 @@ export function renderPath({ componentInfo, href, calledComponentName, publisher
     window.history.pushState({ href }, "", href);
 
     const $root = document.querySelector("#root");
-    const info: RenderComponentItemType = componentInfo ?? {
+    const info: ComponentItemType = componentInfo ?? {
       $target: $root,
       Component: NotFoundPage,
     };

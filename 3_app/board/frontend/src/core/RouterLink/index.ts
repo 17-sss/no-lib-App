@@ -1,11 +1,11 @@
-import Component, { Props, TargetType, RenderComponentItemType } from "../Component";
+import Component, { Props, TargetType, ComponentItemType } from "../Component";
 import { renderPath } from "../Router";
 import { Publisher } from "../Store";
 import "./style.scss";
 
 type DefaultLinkProps = Pick<HTMLAnchorElement, "href" | "text"> & Partial<Pick<HTMLAnchorElement, "name">>;
 export interface RouterLinkProps<T = unknown> extends Props, DefaultLinkProps {
-  componentInfo: RenderComponentItemType;
+  componentInfo: ComponentItemType;
   isButton?: boolean;
   publisherList?: Publisher[];
   callbackOption?: {

@@ -10,10 +10,9 @@ export interface ComponentConstructor<P extends Props = {}> {
 
 export interface ComponentItemType<P extends Props = {}> {
   Component: ComponentConstructor<P>;
-  $target: TargetType;
+  $target?: TargetType;
   props?: P;
 }
-export type RenderComponentItemType = Partial<Pick<ComponentItemType, "$target">> & Omit<ComponentItemType, "$target">;
 
 const defaultPropsKeys = ["isNotKeepAdding", "initInsertPosition"] as const;
 interface DefaultProps {
