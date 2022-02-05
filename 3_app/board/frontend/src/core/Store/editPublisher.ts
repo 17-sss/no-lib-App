@@ -1,4 +1,4 @@
-import { initMainState, MainPublisherState, Publisher } from ".";
+import { initMainState, LOCAL_MAIN_KEY, MainPublisherState, Publisher } from ".";
 import { PostData } from "@common/types";
 import { getParseLocalItem, removeLocalItem, setConvertLocalItem } from "@src/utils/functions";
 
@@ -22,7 +22,7 @@ export const LOCAL_EDIT_KEY = "board_edit";
 
 function isResetEditLocalState(): boolean {
   const { pathname } = new URL(window.location.href);
-  const mainLocalState = getParseLocalItem<MainPublisherState>(LOCAL_EDIT_KEY);
+  const mainLocalState = getParseLocalItem<MainPublisherState>(LOCAL_MAIN_KEY);
   const editId = mainLocalState?.editId;
   const isNeedReset = !editId || editId === initMainState.editId || pathname !== "/edit";
   if (isNeedReset) {
