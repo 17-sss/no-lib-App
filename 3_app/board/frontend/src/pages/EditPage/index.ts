@@ -37,7 +37,6 @@ class EditPage extends Component {
     if (!editData) return;
 
     editPublisher.setState({ ...editPublisher.state, editData });
-    mainPublisher.setState({ ...mainPublisher.state, editId: initMainState.editId }, { notExec: true });
     this.setState({ ...this.state, editData }, { isSetEvents: false });
   }
   // ------

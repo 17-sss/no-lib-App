@@ -15,14 +15,21 @@ export type RouterInfo = {
   [key: string]: ComponentItemType;
 };
 
+export interface PathChangeOption {
+  func: () => Promise<void> | void;
+  pathList: string[];
+  isIncludePath: boolean;
+}
+
+export interface RouterProps {
+  readonly routerInfo: RouterInfo;
+  readonly publisherList: Publisher[];
+  readonly pathChangeOption?: PathChangeOption;
+}
 // ========
 
 class Router {
-  constructor(
-    protected readonly $target: Element | null,
-    protected readonly routerInfo: RouterInfo,
-    private readonly publisherList: Publisher[] = []
-  ) {
+  constructor(readonly $target: Element | null, readonly props: RouterProps) {
     try {
       if ($target === null) throw new CustomError({ msgType: "NOT_FOUND_TARGET", name: this.constructor.name });
       this.init();
@@ -37,18 +44,33 @@ class Router {
    */
   private init(): void {
     this.setPopStateEvent();
+    this.setCleanUp();
     const href = window.location.href;
-    const { routerInfo, publisherList } = this;
+    const { publisherList, routerInfo } = this.props;
     const calledComponentName = this.constructor.name;
     renderRouterPath({ href, calledComponentName, routerInfo, publisherList });
   }
 
+  /** 보고있는 페이지의 이동이 이뤄질 경우, pathChangeOption.func() 실행 */
+  private setCleanUp(): void {
+    const { pathChangeOption } = this.props;
+    if (!pathChangeOption || !this.$target) return;
+    const { func, pathList, isIncludePath } = pathChangeOption;
+
+    const observer = new MutationObserver(async (_) => {
+      const pathname = new URL(document.location.href).pathname;
+      const flag = isIncludePath ? pathList.includes(pathname) : !pathList.includes(pathname);
+      if (flag) await func();
+    });
+    const config = { childList: true, subtree: true };
+    observer.observe(this.$target, config);
+  }
   private setPopStateEvent(): void {
     window.addEventListener("popstate", () => this.popStateEventHandler());
   }
   private popStateEventHandler(e?: PopStateEvent): void {
     const href = window.location.href;
-    const { routerInfo, publisherList } = this;
+    const { publisherList, routerInfo } = this.props;
     const calledComponentName = this.constructor.name;
     renderRouterPath({ href, calledComponentName, routerInfo, publisherList });
   }
