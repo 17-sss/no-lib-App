@@ -81,8 +81,12 @@ export function createPostData({ filterOptions, postData, isFullData }: CreatePo
   return result;
 }
 
+// ===========
+
+type CreatePostsRetrunType = (arrPostData: PostData[]) => PostData[];
+
 /** 선택된 작성자 기준으로 필터링하여 게시글 목록 생성 -- (1) */
-function createAuthorFilterItems(author: string): (arrPostData: PostData[]) => void {
+function createAuthorFilterItems(author: string): CreatePostsRetrunType {
   return (arrPostData: PostData[]) => {
     if (!author) return arrPostData;
     const filterData = arrPostData.filter((v) => v.author === author);
@@ -90,7 +94,7 @@ function createAuthorFilterItems(author: string): (arrPostData: PostData[]) => v
   };
 }
 /** 검색창에 입력된 검색어 기준으로 필터링하여 게시글 목록 생성 -- (2) */
-function createSearchFilterItems(searchWord: string): (arrPostData: PostData[]) => void {
+function createSearchFilterItems(searchWord: string): CreatePostsRetrunType {
   return (arrPostData: PostData[]) => {
     if (!searchWord) return arrPostData;
     const replacedSearchword = searchWord.replace(/\s+/g, "");
@@ -102,7 +106,7 @@ function createSearchFilterItems(searchWord: string): (arrPostData: PostData[]) 
   };
 }
 /** 작성일 클릭 시, 내림차 & 오름차순으로 정렬한 게시글 목록 생성 -- (3) */
-function createDateSortItems(isDesc?: boolean): (arrPostData: PostData[]) => void {
+function createDateSortItems(isDesc?: boolean): CreatePostsRetrunType {
   return (arrPostData: PostData[]) => {
     if (typeof isDesc === "undefined") return arrPostData;
     const sortData = [...arrPostData].sort((a, b) => {
@@ -116,7 +120,7 @@ function createDateSortItems(isDesc?: boolean): (arrPostData: PostData[]) => voi
 }
 
 /** 보여질 게시글 수만큼 게시글 목록 생성 -- (4) */
-function createNumPostItems(numPost: number, pageNum: number, isFullData?: boolean): (arrPostData: PostData[]) => void {
+function createNumPostItems(numPost: number, pageNum: number, isFullData?: boolean): CreatePostsRetrunType {
   return (arrPostData: PostData[]) => {
     if (isFullData) return arrPostData;
     const max = Math.ceil(arrPostData.length / numPost);

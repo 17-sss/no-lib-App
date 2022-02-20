@@ -1,6 +1,6 @@
 import { EditPageBottomBar, EditPageContent } from "@src/compositions";
 import { Component } from "@src/core";
-import { editPublisher, mainPublisher, initMainState } from "@src/core/Store";
+import { editPublisher, mainPublisher, initMainState } from "@src/core/PubSub";
 
 class EditPage extends Component {
   protected initSubscriber(): void {

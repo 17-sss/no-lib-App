@@ -1,5 +1,5 @@
 import { Component, Router, PathChangeOption, createRouterInfo, TargetType } from "@src/core";
-import { editPublisher, initEditState, initMainState, mainPublisher } from "./core/Store";
+import { editPublisher, initEditState, initMainState, mainPublisher } from "./core/PubSub";
 
 class App extends Component {
   constructor($root: TargetType) {

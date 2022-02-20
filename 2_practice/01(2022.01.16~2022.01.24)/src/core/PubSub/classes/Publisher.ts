@@ -6,7 +6,6 @@ interface RecentChangedKeys<S> {
 
 /**
  * [Publisher]
- * - Store 역할을 하는 개체를 생성할 때 사용
  */
 class Publisher<S = any> {
   private _state: S;

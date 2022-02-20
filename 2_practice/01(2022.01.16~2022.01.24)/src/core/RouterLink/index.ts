@@ -1,6 +1,6 @@
 import Component, { Props, TargetType } from "../Component";
 import { renderPath, RouterInfo } from "../Router";
-import { Publisher } from "../Store";
+import { Publisher } from "../PubSub";
 import "./style.scss";
 
 type DefaultLinkProps = Pick<HTMLAnchorElement, "href" | "text"> & Partial<Pick<HTMLAnchorElement, "name">>;

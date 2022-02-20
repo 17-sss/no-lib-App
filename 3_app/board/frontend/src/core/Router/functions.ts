@@ -1,6 +1,6 @@
 import { DetailPage, EditPage, MainPage, NotFoundPage } from "@src/pages";
 import { TargetType, ComponentItemType } from "../Component";
-import { Publisher } from "../Store";
+import { Publisher } from "../PubSub";
 import CustomError from "../CustomError";
 import { RouterInfo } from ".";
 

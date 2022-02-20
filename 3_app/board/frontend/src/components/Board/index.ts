@@ -1,6 +1,6 @@
 import { Component, Props, RouterLink, TargetType } from "@src/core";
 import { DetailPage } from "@src/pages";
-import { editPublisher, mainPublisher } from "@src/core/Store";
+import { editPublisher, mainPublisher } from "@src/core/PubSub";
 import { PostData } from "@common/types";
 import "./style.scss";
 

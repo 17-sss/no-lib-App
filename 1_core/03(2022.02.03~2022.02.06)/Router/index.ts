@@ -7,7 +7,7 @@
 import CustomError from "../CustomError";
 import { ComponentItemType } from "../Component";
 import { renderRouterPath } from "./functions";
-import { Publisher } from "../Store";
+import { Publisher } from "../PubSub";
 
 export * from "./functions";
 

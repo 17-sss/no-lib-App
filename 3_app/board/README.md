@@ -115,7 +115,7 @@ $npm start
     │   │   │   ├── functions.ts
     │   │   │   └── index.ts
     │   │   ├── RouterLink
-    │   │   ├── Store
+    │   │   ├── PubSub
     │   │   │   ├── classes
     │   │   │   │   ├── Publisher.ts
     │   │   │   │   └── Subscriber.ts

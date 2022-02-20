@@ -1,5 +1,5 @@
 import { Component, Props, TargetType } from "@src/core";
-import { MainPublisherState } from "@src/core/Store";
+import { MainPublisherState } from "@src/core/PubSub";
 import "./style.scss";
 
 type DefaultSelectBoxProps = Pick<MainPublisherState, "numPostList">;

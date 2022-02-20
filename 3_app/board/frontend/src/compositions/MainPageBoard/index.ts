@@ -1,6 +1,6 @@
 import { Board, Pagination } from "@src/components";
 import { Component, CustomError } from "@src/core";
-import { mainPublisher, MainFilterOptions, initMainState, createPostData, editPublisher } from "@src/core/Store";
+import { mainPublisher, MainFilterOptions, initMainState, createPostData, editPublisher } from "@src/core/PubSub";
 import { Modal } from "@src/compositions";
 import { getAllPostData } from "@src/utils/functions";
 

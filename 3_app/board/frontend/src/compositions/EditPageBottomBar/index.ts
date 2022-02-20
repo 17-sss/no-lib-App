@@ -1,7 +1,7 @@
 import { PostData, ResponseDataType } from "@common/types";
 import { Button } from "@src/components";
 import { Component, CustomError, renderPath, RouterLink, RouterLinkProps } from "@src/core";
-import { editPublisher, mainPublisher, initEditState } from "@src/core/Store";
+import { editPublisher, mainPublisher, initEditState } from "@src/core/PubSub";
 import { DetailPage, MainPage } from "@src/pages";
 import { Modal } from "@src/compositions";
 import { execFetch } from "@src/utils/functions";

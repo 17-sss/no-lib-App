@@ -1,6 +1,6 @@
 import { Input, Textarea } from "@src/components";
 import { Component, Props } from "@src/core";
-import { editPublisher } from "@src/core/Store";
+import { editPublisher } from "@src/core/PubSub";
 
 import { postDataKorKeys, PostDataKorKeys } from "@src/utils/types";
 import { PostData } from "@common/types";

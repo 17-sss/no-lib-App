@@ -1,5 +1,5 @@
 import CustomError from "../CustomError";
-import { Publisher, Subscriber } from "../Store";
+import { Publisher, Subscriber } from "../PubSub";
 import { makeComponentId } from "./functions";
 import { createNodes, createTemplateNodes, updateNodes } from "./vdom";
 

@@ -3,7 +3,7 @@ import { Component, CustomError, Props, renderPath, RouterLink } from "@src/core
 import { Button } from "@src/components";
 import Modal, { ModalProps } from "@src/compositions/Modal";
 import { EditPage, MainPage } from "@src/pages";
-import { editPublisher, mainPublisher } from "@src/core/Store";
+import { editPublisher, mainPublisher } from "@src/core/PubSub";
 import { execFetch } from "@src/utils/functions";
 import "./style.scss";
 
