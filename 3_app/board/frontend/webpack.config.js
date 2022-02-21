@@ -20,7 +20,7 @@ const entry = {
 };
 const output = {
   filename: "[name].js",
-  path: path.resolve(__dirname, "dist"),
+  path: path.resolve(__dirname, "../backend/front_build"),
 };
 
 const resolve = {

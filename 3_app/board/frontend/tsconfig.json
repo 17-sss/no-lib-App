@@ -4,7 +4,7 @@
     "module": "esnext",        /* 모듈을 위한 코드 생성 설정: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', 'es2020', or 'ESNext'. */
     // "jsx": "react",            /* JSX 코드 생성 설정: 'preserve', 'react-native', 혹은 'react'. */
     "sourceMap": true,         /* '.map' 파일 생성 여부. */
-    "outDir": "./dist/",       /* 해당 디렉토리로 결과 구조를 보냅니다. */
+    // "outDir": "./dist/",       /* 해당 디렉토리로 결과 구조를 보냅니다. (굳이 안해도 됨, webpack이랑 엮여있음) */
     "noImplicitAny": true,     /* 'any' 타입으로 구현된 표현식 혹은 정의 에러처리 여부 */
     "lib": ["dom", "DOM.Iterable", "ESNext"],      /* 컴파일에 포함될 라이브러리 파일 목록 */
     "skipLibCheck": true,                         /* 정의 파일의 타입 확인을 건너 뛸 지 여부 */
