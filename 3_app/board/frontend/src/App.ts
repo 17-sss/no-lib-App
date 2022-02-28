@@ -1,5 +1,6 @@
-import { Component, Router, PathChangeOption, createRouterInfo, TargetType } from "@src/core";
+import { Component, Router, PathChangeOption, TargetType, RouterInfo } from "@src/core";
 import { editPublisher, initEditState, initMainState, mainPublisher } from "./core/PubSub";
+import { DetailPage, EditPage, MainPage, NotFoundPage } from "./pages";
 
 class App extends Component {
   constructor($root: TargetType) {
@@ -10,9 +11,18 @@ class App extends Component {
   }
 
   private setAppRouter(): void {
-    if (!this.$target || typeof this.$target === "string") return;
+    const { $target } = this;
+    if (!$target || typeof $target === "string") return;
+
     const publisherList = [mainPublisher, editPublisher];
-    const routerInfo = createRouterInfo();
+    const routerInfo: RouterInfo = {
+      "/": { $target, Component: MainPage },
+      "/detail": { $target, Component: DetailPage },
+      "/edit": { $target, Component: EditPage },
+      "/write": { $target, Component: EditPage },
+      "/notFound": { $target, Component: NotFoundPage },
+    };
+
     const pathChangeOption: PathChangeOption = {
       func: () => {
         mainPublisher.setState({ ...mainPublisher.state, editId: initMainState.editId }, { notExec: true });
@@ -21,7 +31,7 @@ class App extends Component {
       pathList: ["/edit"],
       isIncludePath: false,
     };
-    new Router(this.$target, { publisherList, routerInfo, pathChangeOption });
+    new Router($target, { publisherList, routerInfo, pathChangeOption });
   }
 }
 export default App;

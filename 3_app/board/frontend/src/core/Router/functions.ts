@@ -1,5 +1,5 @@
-import { DetailPage, EditPage, MainPage, NotFoundPage } from "@src/pages";
-import { TargetType, ComponentItemType } from "../Component";
+import { NotFoundPage } from "@src/pages";
+import { ComponentItemType } from "../Component";
 import { Publisher } from "../PubSub";
 import CustomError from "../CustomError";
 import { RouterInfo } from ".";
@@ -72,18 +72,6 @@ export function renderRouterPath({
   } catch (e) {
     console.error(e);
   }
-}
-
-/** ✨ createRouterInfo: 이 애플리케이션에서 쓸 페이지 정보 생성 */
-export function createRouterInfo($target: TargetType = document.querySelector("#root")): RouterInfo {
-  const routerInfo: RouterInfo = {
-    "/": { $target, Component: MainPage },
-    "/detail": { $target, Component: DetailPage },
-    "/edit": { $target, Component: EditPage },
-    "/write": { $target, Component: EditPage },
-    "/notFound": { $target, Component: NotFoundPage },
-  };
-  return routerInfo;
 }
 
 interface QueryStringDetail {

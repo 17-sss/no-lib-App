@@ -1,4 +1,4 @@
-# no-lib-App (`app: board`)
+# no-lib-App (`App: board`)
 
 라이브러리, 프레임워크 없이 웹 애플리케이션 만들기 - **게시판**
 
